@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        SONAR_TOKEN = credentials('sonarqube-token')
+        SONAR_TOKEN = credentials('JENKINS_URL/job/proj1/build?token=JENKINS_TOKEN1')
     }
     
     stages {
