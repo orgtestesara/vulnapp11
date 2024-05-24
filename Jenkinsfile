@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        sonar 'SonarScanner' // Nome configurado anteriormente para o SonarScanner
+      //  sonar 'SonarScanner' // Nome configurado anteriormente para o SonarScanner
     }
     environment {
         SONAR_HOST_URL = 'http://54.175.178.217:9001' // URL do seu servidor SonarQube
