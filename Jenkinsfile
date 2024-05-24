@@ -5,7 +5,7 @@ pipeline {
     //}
     environment {
         SONAR_HOST_URL = 'http://54.175.178.217:9001' // URL do seu servidor SonarQube
-        SONAR_AUTH_TOKEN = credentials('squ_31a956424e72e785f59b8cd60942720e4f19a53c') // ID da credencial do token configurado no Jenkins
+        SONAR_AUTH_TOKEN = credentials('sonar-token-id'') // ID da credencial do token configurado no Jenkins
     }
     stages {
         stage('SonarQube Analysis') {
