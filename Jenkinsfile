@@ -11,7 +11,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube Server') { // Nome configurado para o servidor SonarQube
-                    sh 'sonar-scanner -Dsonar.login=$SONAR_AUTH_TOKEN'
+                    sh './gradlew sonar'
+                    //sh 'sonar-scanner -Dsonar.login=$SONAR_AUTH_TOKEN'
                 }
             }
         }
