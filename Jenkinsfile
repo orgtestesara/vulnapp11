@@ -1,9 +1,9 @@
 pipeline {
 	agent any
-	tools {
-	    maven "MAVEN3"
-	    jdk "OracleJDK11"
-	}
+	//tools {
+	//    maven "MAVEN3"
+	 //   jdk "OracleJDK11"
+	//}
 
 	stages {
 	    stage('Fetch code') {
