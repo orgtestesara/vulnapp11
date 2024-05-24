@@ -1,24 +1,67 @@
 pipeline {
-    agent any
-    tools {
-        maven 'Maven'
-    }
+	agent any
+	tools {
+	    maven "MAVEN3"
+	    jdk "OracleJDK11"
+	}
 
-    stages {
-        stage('Git Checkout') {
+	stages {
+	    stage('Fetch code') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ZudaPradana/sonar']])
-                echo 'Git Checkout Completed'
+               git branch: 'main', url: 'https://github.com/orgtestesara/vulnapp11.git'
             }
-        }
 
-        stage('SonarQube Analysis') {
+	    }
+
+	    stage('Build'){
+	        steps{
+	           sh 'mvn install -DskipTests'
+	        }
+
+	        post {
+	           success {
+	              echo 'Now Archiving it...'
+	              archiveArtifacts artifacts: '**/target/*.war'
+	           }
+	        }
+	    }
+
+	    stage('UNIT TEST') {
+            steps{
+                sh 'mvn test'
+            }
+       }
+
+       stage('Checkstyle Analysis'){
             steps {
-                withSonarQubeEnv('ServerNameSonar') {
-                    bat '''mvn clean verify sonar:sonar -Dsonar.projectKey=ProjectNameSonar -Dsonar.projectName='ProjectNameSonar' -Dsonar.host.url=http://localhost:9000''' //port 9000 is default for sonar
-                    echo 'SonarQube Analysis Completed'
+                sh 'mvn checkstyle:checkstyle'
+            }
+       }
+
+       stage('Sonar Analysis') {
+            environment {
+                scannerHome = tool 'sonar5.0'
+            }
+            steps {
+               withSonarQubeEnv('mysonar') {
+                   sh '''/home/ec2-user/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.projectKey=my-project \
+                   -Dsonar.projectName=my-project \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+              }
+           }
+       }
+
+       stage("Quality Gate") {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
-    }
+	}
 }
